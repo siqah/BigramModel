@@ -32,6 +32,7 @@ class TrigramModel:
         return prepared
 
     def train(self, text, verbose=True):
+
         prepared = self.prepare_text(text)
         if verbose:
             print(f"\n{'='*60}")
@@ -91,7 +92,26 @@ class TrigramModel:
             for (c1, c2), count in sorted_bigrams:
                 print(f"  '{c1}{c2}': {count} times")      
 
+    def probability(self, char1, char2, char3):
+        #get  count of the specific trigram 
+        trigram_count = self.trigram_counts.get((char1, char2, char3), 0)
 
+        #Get count of the conditioning bigram
+        bigram_count = self.bigram_counts.get((char1, char2), 0)
+
+        #Vocabulary size for smoothing  denominator
+        vocab_size = len(self.vocab)
+
+        #Apply Laplace smoothing
+        numerator = trigram_count + self.smoothig
+        denominator = bigram_count + (self.smoothing * vocab_size) 
+
+        #handle case where bigram neverr seen (denominator = smoothing * vocab_size)
+        if denominator == 0:
+            return 1.0 / vocab_size #Uniform distribution
+
+        return numrator / denominator
+          
 
 
 

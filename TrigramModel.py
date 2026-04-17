@@ -103,17 +103,28 @@ class TrigramModel:
         vocab_size = len(self.vocab)
 
         #Apply Laplace smoothing
-        numerator = trigram_count + self.smoothig
+        numerator = trigram_count + self.smoothing
         denominator = bigram_count + (self.smoothing * vocab_size) 
 
         #handle case where bigram neverr seen (denominator = smoothing * vocab_size)
         if denominator == 0:
             return 1.0 / vocab_size #Uniform distribution
 
-        return numrator / denominator
+        return numerator / denominator
           
+    def get_next_char_distribution(self, char1, char2):
+        distribution = {}
+        for char3 in self.vocab:
+            prob = probability(char1, char2, char3)
+            if prob > 0:
+                distribution[char3] = prob
 
+        #Normalize to ensure it sums to 1
+        total = sum(distribution.values())
+        if total > 0:
+            distribution = {k: v/total for k, v in distribution.items()}
 
+        return distribution
 
             
                 
